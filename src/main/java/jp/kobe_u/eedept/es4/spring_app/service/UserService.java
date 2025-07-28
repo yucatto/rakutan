@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
     private final UserRepository userRepository;
 
-    // Create
+    // Create つくるよ
     public UserRes createUser(UserPostReq req) {
         if (userRepository.existsById(req.getUserId())) {
             throw new IllegalArgumentException("User with this ID already exists");
