@@ -6,4 +6,5 @@ import lombok.Data;
 public class UserRes {
     private String userId;
     private String userName;
+    private String email;
 }
