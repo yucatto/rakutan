@@ -11,11 +11,11 @@ import jp.kobe_u.eedept.es4.spring_app.api.schema.request.user.UserDeleteReq;
 import jp.kobe_u.eedept.es4.spring_app.api.schema.request.user.UserGetReq;
 import jp.kobe_u.eedept.es4.spring_app.api.schema.request.user.UserPostReq;
 import jp.kobe_u.eedept.es4.spring_app.api.schema.request.user.UserPutReq;
-import jp.kobe_u.eedept.es4.spring_app.api.schema.response.community.CommunityRes;
 import jp.kobe_u.eedept.es4.spring_app.api.schema.response.user.UserRes;
-import jp.kobe_u.eedept.es4.spring_app.database.entities.Community;
 import jp.kobe_u.eedept.es4.spring_app.database.entities.User;
 import jp.kobe_u.eedept.es4.spring_app.database.repository.UserRepository;
+import jp.kobe_u.eedept.es4.spring_app.exception.ConflictException;
+import jp.kobe_u.eedept.es4.spring_app.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -26,12 +26,13 @@ public class UserService {
     // Create つくるよ
     public UserRes createUser(UserPostReq req) {
         if (userRepository.existsById(req.getUserId())) {
-            throw new IllegalArgumentException("User with this ID already exists");
+            throw new ConflictException("User with this ID already exists");
         }
         User user = new User();
         user.setUserId(req.getUserId());
         user.setEmail(req.getEmail());
         user.setUserName(req.getUserName());
+        user.setCommunityId(req.getCommunityId());
         user = userRepository.save(user);
         return convertToRes(user);
     }
@@ -40,7 +41,7 @@ public class UserService {
     public UserRes getUser(UserGetReq req) {
         User user = userRepository.findById(req.getUserId())
                 .orElseThrow(
-                        () -> new IllegalArgumentException("User not found with ID: " + req.getUserId()));
+                        () -> new ResourceNotFoundException("User not found with ID: " + req.getUserId()));
         return convertToRes(user);
     }
 
@@ -56,7 +57,7 @@ public class UserService {
     public UserRes updateUser(UserPutReq req) {
         String userId = req.getUserId();
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
 
         user.setUserName(req.getUserName());
         user = userRepository.save(user);
@@ -67,7 +68,7 @@ public class UserService {
     public void deleteUser(UserDeleteReq req) {
         String userId = req.getUserId();
         if (!userRepository.existsById(userId)) {
-            throw new IllegalArgumentException("user not found with ID: " + userId);
+            throw new ResourceNotFoundException("user not found with ID: " + userId);
         }
         userRepository.deleteById(userId);
     }
@@ -77,6 +78,8 @@ public class UserService {
         UserRes res = new UserRes();
         res.setUserId(user.getUserId());
         res.setUserName(user.getUserName());
+        res.setEmail(user.getEmail());
+        res.setCommunityId(user.getCommunityId());
         return res;
     }
 }

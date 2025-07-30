@@ -8,12 +8,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import jp.kobe_u.eedept.es4.spring_app.api.schema.request.task.TaskDeleteReq;
 import jp.kobe_u.eedept.es4.spring_app.api.schema.request.task.TaskGetReq;
 import jp.kobe_u.eedept.es4.spring_app.api.schema.request.task.TaskPostReq;
 import jp.kobe_u.eedept.es4.spring_app.api.schema.request.task.TaskPutReq;
+import jp.kobe_u.eedept.es4.spring_app.api.schema.request.task.TaskQueryReq;
 import jp.kobe_u.eedept.es4.spring_app.api.schema.response.task.TaskRes;
 import jp.kobe_u.eedept.es4.spring_app.service.TaskService;
 import lombok.RequiredArgsConstructor;
@@ -39,8 +42,14 @@ public class TaskController {
         return taskService.getAllTasks();
     }
 
+    @GetMapping("/list")
+    public List<TaskRes> getTasksByQuery(
+            @Valid TaskQueryReq req) {
+        return taskService.getTasksByQuery(req);
+    }
+
     @PutMapping
-    public TaskRes updateTask(@RequestBody TaskPutReq req) {
+    public TaskRes updateTask(@Valid @RequestBody TaskPutReq req) {
         return taskService.updateTask(req);
     }
 

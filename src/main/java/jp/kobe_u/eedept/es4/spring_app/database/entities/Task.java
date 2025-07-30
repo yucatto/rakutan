@@ -19,6 +19,9 @@ public class Task {
     private String taskType;
     private String tag;
     private String communityId;
+    private String userId;
     private String related_url;
     private LocalDateTime deadline;
+    private Long companyId;
+    private String status;
 }

@@ -2,11 +2,55 @@ services:
   app:
     build: .
     ports:
-      - "{{port}}:8080"
+      - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://192.168.0.29:3306/{{projectName}}
-      SPRING_DATASOURCE_USERNAME: "{{dbUser}}"
-      SPRING_DATASOURCE_PASSWORD: "{{dbPassword}}"
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/mydatabase
+      SPRING_DATASOURCE_USERNAME: myuser
+      SPRING_DATASOURCE_PASSWORD: mypassword
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
-    restart: always
+    depends_on:
+      - db
+    networks:
+      - app-network
 
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: renkon
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "3306:3306" 
+    networks:
+      - app-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  web-ui:
+    build:
+      context: ./web-ui
+      dockerfile: Dockerfile
+    ports:
+      - "8000:80"
+    networks:
+      - app-network
+
+volumes:
+  mysql-data:
+
+networks:
+  app-network:
+    driver: bridge

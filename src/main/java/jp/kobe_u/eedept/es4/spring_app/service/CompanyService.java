@@ -12,6 +12,8 @@ import jp.kobe_u.eedept.es4.spring_app.api.schema.request.company.CompanyPutReq;
 import jp.kobe_u.eedept.es4.spring_app.api.schema.response.company.CompanyRes;
 import jp.kobe_u.eedept.es4.spring_app.database.entities.Company;
 import jp.kobe_u.eedept.es4.spring_app.database.repository.CompanyRepository;
+import jp.kobe_u.eedept.es4.spring_app.exception.ConflictException;
+import jp.kobe_u.eedept.es4.spring_app.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -21,6 +23,9 @@ public class CompanyService {
 
     // Create
     public CompanyRes createCompany(CompanyPostReq req) {
+        if (checkCompanyExists(req.getCommunityId(), req.getCompanyName())) {
+            throw new ConflictException("Company with this name already exists in the community");
+        }
         Company company = new Company();
         company.setCommunityId(req.getCommunityId());
         company.setCompanyName(req.getCompanyName());
@@ -33,7 +38,7 @@ public class CompanyService {
     public CompanyRes getCompany(CompanyGetReq req) {
         Company company = companyRepository.findById(req.getCompanyId())
                 .orElseThrow(
-                        () -> new IllegalArgumentException("Company not found with ID: " + req.getCompanyId()));
+                        () -> new ResourceNotFoundException("Company not found with ID: " + req.getCompanyId()));
         return convertToRes(company);
     }
 
@@ -45,11 +50,19 @@ public class CompanyService {
                 .collect(Collectors.toList());
     }
 
+    // Read (by Community ID)
+    public List<CompanyRes> getCompaniesByCommunityId(String communityId) {
+        List<Company> companies = companyRepository.findByCommunityId(communityId);
+        return companies.stream()
+                .map(this::convertToRes)
+                .collect(Collectors.toList());
+    }
+
     // Update
     public CompanyRes updateCompany(CompanyPutReq req) {
         Long companyId = req.getCompanyId();
         Company company = companyRepository.findById(companyId)
-                .orElseThrow(() -> new IllegalArgumentException("Company not found with ID: " + companyId));
+                .orElseThrow(() -> new ResourceNotFoundException("Company not found with ID: " + companyId));
 
         company.setCommunityId(req.getCommunityId());
         company.setCompanyName(req.getCompanyName());
@@ -62,7 +75,7 @@ public class CompanyService {
     public void deleteCompany(CompanyDeleteReq req) {
         Long companyId = req.getCompanyId();
         if (!companyRepository.existsById(companyId)) {
-            throw new IllegalArgumentException("Company not found with ID: " + companyId);
+            throw new ResourceNotFoundException("Company not found with ID: " + companyId);
         }
         companyRepository.deleteById(companyId);
     }

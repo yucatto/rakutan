@@ -7,11 +7,13 @@ import lombok.Data;
 @Entity
 @Data
 public class User {
-    
-        @Id
+
+    @Id
     private String userId;
 
     private String userName;
-    
+
     private String email;
+
+    private String communityId;
 }

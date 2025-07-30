@@ -53,6 +53,12 @@ public class CompanyController {
         return ResponseEntity.ok(companyService.getAllCompanies());
     }
 
+    // Read (by Community ID)
+    @GetMapping("/community/{communityId}")
+    public ResponseEntity<List<CompanyRes>> getCompaniesByCommunityId(@PathVariable String communityId) {
+        return ResponseEntity.ok(companyService.getCompaniesByCommunityId(communityId));
+    }
+
     // Update
     @PutMapping("/{companyId}")
     public ResponseEntity<CompanyRes> updateCompany(

@@ -7,4 +7,5 @@ public class UserRes {
     private String userId;
     private String userName;
     private String email;
+    private String communityId;
 }
