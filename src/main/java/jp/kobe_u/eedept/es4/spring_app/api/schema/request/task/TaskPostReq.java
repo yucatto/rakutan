@@ -12,4 +12,6 @@ public class TaskPostReq {
     private String communityId;
     private String related_url;
     private LocalDateTime deadline;
+    private String userId;
+    private Long companyId;
 }

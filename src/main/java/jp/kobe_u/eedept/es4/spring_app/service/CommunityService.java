@@ -12,6 +12,8 @@ import jp.kobe_u.eedept.es4.spring_app.api.schema.request.community.CommunityPut
 import jp.kobe_u.eedept.es4.spring_app.api.schema.response.community.CommunityRes;
 import jp.kobe_u.eedept.es4.spring_app.database.entities.Community;
 import jp.kobe_u.eedept.es4.spring_app.database.repository.CommunityRepository;
+import jp.kobe_u.eedept.es4.spring_app.exception.ConflictException;
+import jp.kobe_u.eedept.es4.spring_app.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -22,7 +24,7 @@ public class CommunityService {
     // Create
     public CommunityRes createCommunity(CommunityPostReq req) {
         if (communityRepository.existsById(req.getCommunityId())) {
-            throw new IllegalArgumentException("Community with this ID already exists");
+            throw new ConflictException("Community with this ID already exists");
         }
         Community community = new Community();
         community.setCommunityId(req.getCommunityId());
@@ -35,7 +37,7 @@ public class CommunityService {
     public CommunityRes getCommunity(CommunityGetReq req) {
         Community community = communityRepository.findById(req.getCommunityId())
                 .orElseThrow(
-                        () -> new IllegalArgumentException("Community not found with ID: " + req.getCommunityId()));
+                        () -> new ResourceNotFoundException("Community not found with ID: " + req.getCommunityId()));
         return convertToRes(community);
     }
 
@@ -51,7 +53,7 @@ public class CommunityService {
     public CommunityRes updateCommunity(CommunityPutReq req) {
         String communityId = req.getCommunityId();
         Community community = communityRepository.findById(communityId)
-                .orElseThrow(() -> new IllegalArgumentException("Community not found with ID: " + communityId));
+                .orElseThrow(() -> new ResourceNotFoundException("Community not found with ID: " + communityId));
 
         community.setCommunityName(req.getCommunityName());
         community = communityRepository.save(community);
@@ -62,7 +64,7 @@ public class CommunityService {
     public void deleteCommunity(CommunityDeleteReq req) {
         String communityId = req.getCommunityId();
         if (!communityRepository.existsById(communityId)) {
-            throw new IllegalArgumentException("Community not found with ID: " + communityId);
+            throw new ResourceNotFoundException("Community not found with ID: " + communityId);
         }
         communityRepository.deleteById(communityId);
     }

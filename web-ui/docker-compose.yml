@@ -1,0 +1,7 @@
+version: "3.8"
+services:
+  web:
+    build: .
+    container_name: apache_static_web
+    ports:
+      - "8888:80"

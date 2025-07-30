@@ -16,6 +16,9 @@ public class TaskRes {
     private String communityId;
     private String related_url;
     private LocalDateTime deadline;
+    private String userId;
+    private Long companyId;
+    private String status;
 
     public TaskRes(Task task) {
         this.taskId = task.getTaskId();
@@ -25,5 +28,8 @@ public class TaskRes {
         this.communityId = task.getCommunityId();
         this.related_url = task.getRelated_url();
         this.deadline = task.getDeadline();
+        this.userId = task.getUserId();
+        this.companyId = task.getCompanyId();
+        this.status = task.getStatus();
     }
 }
