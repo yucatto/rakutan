@@ -13,6 +13,7 @@ COPY build.gradle settings.gradle ./
 COPY gradlew ./
 COPY gradle ./gradle/
 
+
 # 2. gradlewに実行権限を付与し、依存関係をダウンロードする
 # このステップはbuild.gradleやsettings.gradleが変更された場合にのみ実行される
 RUN chmod +x ./gradlew && ./gradlew dependencies --no-daemon
